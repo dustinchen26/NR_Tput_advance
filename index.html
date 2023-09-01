@@ -1,0 +1,470 @@
+<!-- 
+  Copyright © [2023] [Dustin_Chen]. All rights reserved.
+  Author: Dustin_Chen
+  Email:  Dustin_Chen@compal.com or chuhpsdustin@gmail.com
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>NR Throughput Advanced Calculator</title>
+	<style>
+		p {
+			line-height: 0; /* 調整段落的行距 */
+		}	
+	</style>
+    <script type="text/javascript">
+        var J, Layers, f, RB_allocation, mu, OH, TDD_pattern, BLER, Qm, Rmax; // Define variables globally
+
+
+        // Define the MCS configurations based on different tables
+        var mcsConfigurations = {
+
+            "Table5.1.3.1-1": [
+                [2, 120 / 1024], // MCS Index 0
+                [2, 157 / 1024], // MCS Index 1
+                [2, 193 / 1024], // MCS Index 2
+                [2, 251 / 1024], // MCS Index 3
+                [2, 308 / 1024], // MCS Index 4
+                [2, 379 / 1024], // MCS Index 5
+                [2, 449 / 1024], // MCS Index 6
+                [2, 526 / 1024], // MCS Index 7
+                [2, 602 / 1024], // MCS Index 8
+                [2, 679 / 1024], // MCS Index 9
+                [4, 340 / 1024], // MCS Index 10
+                [4, 378 / 1024], // MCS Index 11
+                [4, 434 / 1024], // MCS Index 12
+                [4, 490 / 1024], // MCS Index 13
+                [4, 553 / 1024], // MCS Index 14
+                [4, 616 / 1024], // MCS Index 15
+                [4, 658 / 1024], // MCS Index 16
+                [6, 438 / 1024], // MCS Index 17
+                [6, 466 / 1024], // MCS Index 18
+                [6, 517 / 1024], // MCS Index 19
+                [6, 567 / 1024], // MCS Index 20
+                [6, 616 / 1024], // MCS Index 21
+                [6, 666 / 1024], // MCS Index 22
+                [6, 719 / 1024], // MCS Index 23
+                [6, 772 / 1024], // MCS Index 24
+                [6, 822 / 1024], // MCS Index 25
+                [6, 873 / 1024], // MCS Index 26
+                [6, 910 / 1024], // MCS Index 27
+                [6, 948 / 1024] // MCS Index 28
+            ],
+
+            "Table5.1.3.1-2": [
+                [2, 120 / 1024], // MCS Index 0
+                [2, 193 / 1024], // MCS Index 1
+                [2, 308 / 1024], // MCS Index 2
+                [2, 449 / 1024], // MCS Index 3
+                [2, 602 / 1024], // MCS Index 4
+                [4, 378 / 1024], // MCS Index 5
+                [4, 434 / 1024], // MCS Index 6
+                [4, 490 / 1024], // MCS Index 7
+                [4, 553 / 1024], // MCS Index 8
+                [4, 616 / 1024], // MCS Index 9
+                [4, 658 / 1024], // MCS Index 10
+                [6, 466 / 1024], // MCS Index 11
+                [6, 517 / 1024], // MCS Index 12
+                [6, 567 / 1024], // MCS Index 13
+                [6, 616 / 1024], // MCS Index 14
+                [6, 666 / 1024], // MCS Index 15
+                [6, 719 / 1024], // MCS Index 16
+                [6, 772 / 1024], // MCS Index 17
+                [6, 822 / 1024], // MCS Index 18
+                [6, 873 / 1024], // MCS Index 19
+                [8, 682.5 / 1024], // MCS Index 20
+                [8, 711 / 1024], // MCS Index 21
+                [8, 754 / 1024], // MCS Index 22
+                [8, 797 / 1024], // MCS Index 23
+                [8, 841 / 1024], // MCS Index 24
+                [8, 885 / 1024], // MCS Index 25
+                [8, 916.5 / 1024], // MCS Index 26
+                [8, 948 / 1024] // MCS Index 27
+            ],
+            "Table5.1.3.1-3": [
+                [2, 30 / 1024], // MCS Index 0
+                [2, 40 / 1024], // MCS Index 1
+                [2, 50 / 1024], // MCS Index 2
+                [2, 64 / 10244], // MCS Index 3
+                [2, 78 / 1024], // MCS Index 4
+                [2, 99 / 1024], // MCS Index 5
+                [2, 120 / 1024], // MCS Index 6
+                [2, 157 / 1024], // MCS Index 7
+                [2, 193 / 1024], // MCS Index 8
+                [2, 251 / 1024], // MCS Index 9
+                [2, 308 / 1024], // MCS Index 10
+                [2, 379 / 1024], // MCS Index 11
+                [2, 449 / 1024], // MCS Index 12
+                [2, 526 / 1024], // MCS Index 13
+                [2, 602 / 1024], // MCS Index 14
+                [4, 340 / 1024], // MCS Index 15
+                [4, 378 / 1024], // MCS Index 16
+                [4, 434 / 1024], // MCS Index 17
+                [4, 490 / 1024], // MCS Index 18
+                [4, 553 / 1024], // MCS Index 19
+                [4, 616 / 1024], // MCS Index 20
+                [6, 438 / 1024], // MCS Index 21
+                [6, 466 / 1024], // MCS Index 22
+                [6, 517 / 1024], // MCS Index 23
+                [6, 567 / 1024], // MCS Index 24
+                [6, 616 / 1024], // MCS Index 25
+                [6, 666 / 1024], // MCS Index 26
+                [6, 719 / 1024], // MCS Index 27
+                [6, 772 / 1024], // MCS Index 28
+            ],
+            "Table6.1.4.1-1": [
+                [2, 120 / 1024], // MCS Index 0
+                [2, 157 / 1024], // MCS Index 1
+                [2, 193 / 1024], // MCS Index 2
+                [2, 251 / 1024], // MCS Index 3
+                [2, 308 / 1024], // MCS Index 4
+                [2, 379 / 1024], // MCS Index 5
+                [2, 449 / 1024], // MCS Index 6
+                [2, 526 / 1024], // MCS Index 7
+                [2, 602 / 1024], // MCS Index 8
+                [2, 679 / 1024], // MCS Index 9
+                [4, 340 / 1024], // MCS Index 10
+                [4, 378 / 1024], // MCS Index 11
+                [4, 434 / 1024], // MCS Index 12
+                [4, 490 / 1024], // MCS Index 13
+                [4, 553 / 1024], // MCS Index 14
+                [4, 616 / 1024], // MCS Index 15
+                [4, 658 / 1024], // MCS Index 16
+                [6, 446 / 1024], // MCS Index 17
+                [6, 517 / 1024], // MCS Index 18
+                [6, 567 / 1024], // MCS Index 19
+                [6, 616 / 1024], // MCS Index 20
+                [6, 666 / 1024], // MCS Index 21
+                [6, 719 / 1024], // MCS Index 22
+                [6, 772 / 1024], // MCS Index 23
+                [6, 822 / 1024], // MCS Index 24
+                [6, 873 / 1024], // MCS Index 25
+                [6, 910 / 1024], // MCS Index 26
+                [6, 948 / 1024], // MCS Index 27
+            ],
+            "Table6.1.4.1-2": [
+                [2, 30 / 1024], // MCS Index 0
+                [2, 40 / 1024], // MCS Index 1
+                [2, 50 / 1024], // MCS Index 2
+                [2, 64 / 1024], // MCS Index 3
+                [2, 78 / 1024], // MCS Index 4
+                [2, 99 / 1024], // MCS Index 5
+                [2, 120 / 1024], // MCS Index 6
+                [2, 157 / 1024], // MCS Index 7
+                [2, 193 / 1024], // MCS Index 8
+                [2, 251 / 1024], // MCS Index 9
+                [2, 308 / 1024], // MCS Index 10
+                [2, 379 / 1024], // MCS Index 11
+                [2, 449 / 1024], // MCS Index 12
+                [2, 526 / 1024], // MCS Index 13
+                [2, 602 / 1024], // MCS Index 14
+                [2, 679 / 1024], // MCS Index 15
+                [4, 378 / 1024], // MCS Index 16
+                [4, 434 / 1024], // MCS Index 17
+                [4, 490 / 1024], // MCS Index 18
+                [4, 553 / 1024], // MCS Index 19
+                [4, 616 / 1024], // MCS Index 20
+                [4, 658 / 1024], // MCS Index 21
+                [4, 699 / 1024], // MCS Index 22
+                [4, 772 / 1024], // MCS Index 23
+                [6, 567 / 1024], // MCS Index 24
+                [6, 616 / 1024], // MCS Index 25
+                [6, 666 / 1024], // MCS Index 26
+                [6, 772 / 1024], // MCS Index 27
+            ],
+            // ... (other tables)
+        };
+
+        function calculateThroughput() {
+            J = parseFloat(document.getElementById("numAggregatedCC").value);
+            Layers = parseInt(document.getElementById("maxLayers").value);
+            f = parseFloat(document.getElementById("scalingFactor").value);
+            RB_allocation = parseFloat(document.getElementById("RBAllocation").value);
+            mu = parseInt(document.getElementById("muValue").value);
+            OH = parseFloat(document.getElementById("OHValue").value);
+            TDD_pattern = parseFloat(document.getElementById("TDDPattern").value);
+
+            // Clear previous error message
+            document.getElementById("result").innerHTML = "";
+
+            // Extract BLER input value
+            BLER = parseFloat(document.getElementById("blerInput").value); // User input for BLER
+
+
+            // Add input validation for BLER
+            if (isNaN(BLER) || BLER < 0 || BLER > 1) {
+                document.getElementById("allResultsError").innerHTML =
+                    "Invalid BLER input. Please enter a value between 0 and 1.";
+                return;
+            }
+
+            // Clear previous error message
+            document.getElementById("allResultsError").innerHTML = "";
+
+            var selectedTable = document.getElementById("selectedTable").value;
+            var selectedMCSIndex = parseInt(document.getElementById("selectedMCSIndex").value);
+
+            Qm = mcsConfigurations[selectedTable][selectedMCSIndex][0];
+            Rmax = mcsConfigurations[selectedTable][selectedMCSIndex][1];
+
+            var throughput = Math.pow(10, -6) * J * Layers * Qm * f * Rmax * (RB_allocation * 12 / (Math.pow(10, -3) / (
+                14 * Math.pow(2, mu)))) * (1 - OH) * TDD_pattern * (1 - BLER);
+
+            document.getElementById("result").innerHTML = "NR Throughput: " + throughput.toFixed(3) + " Mbps";
+        }
+
+        function calculateSingleMCSThroughput(Qm, Rmax) {
+            // Add your logic here to calculate the throughput for a single MCS index
+            // For example:
+            var J = parseFloat(document.getElementById("numAggregatedCC").value);
+            var Layers = parseInt(document.getElementById("maxLayers").value);
+            var f = parseFloat(document.getElementById("scalingFactor").value);
+            var RB_allocation = parseFloat(document.getElementById("RBAllocation").value);
+            var mu = parseInt(document.getElementById("muValue").value);
+            var OH = parseFloat(document.getElementById("OHValue").value);
+            var TDD_pattern = parseFloat(document.getElementById("TDDPattern").value);
+            var BLER = parseFloat(document.getElementById("blerInput").value);
+
+            var throughput = Math.pow(10, -6) * J * Layers * Qm * f * Rmax * (RB_allocation * 12 / (Math.pow(10, -3) / (
+                14 * Math.pow(2, mu)))) * (1 - OH) * TDD_pattern * (1 - BLER);
+
+            return throughput;
+        }
+
+        function calculateAllMCS() {
+            var selectedTable = document.getElementById("selectedTable").value;
+            var mcsIndices = mcsConfigurations[selectedTable].length;
+            var results = [];
+            var BLER = parseFloat(document.getElementById("blerInput").value);
+
+            // Add input validation for BLER
+            if (isNaN(BLER) || BLER < 0 || BLER > 1) {
+                document.getElementById("allResultsError").innerHTML =
+                    "Invalid BLER input. Please enter a value between 0 and 1.";
+                return;
+            }
+
+            // Clear previous error message
+            document.getElementById("allResultsError").innerHTML = "";
+
+            for (var i = 0; i < mcsIndices; i++) {
+                var Qm = mcsConfigurations[selectedTable][i][0];
+                var Rmax = mcsConfigurations[selectedTable][i][1];
+                var throughput = calculateSingleMCSThroughput(Qm, Rmax);
+                results.push({
+                    mcsIndex: i,
+                    throughput: throughput
+                });
+            }
+
+            displayResultsTable(results);
+        }
+
+        function displayResultsTable(results) {
+            var table =
+                "<table style='border-collapse: collapse; border: 1px solid black;'><tr><th style='border: 1px solid black;'>MCS Index</th>";
+            var values = "<tr><td style='border: 1px solid black;'>Throughput (Mbps)</td>";
+
+            for (var i = 0; i < results.length; i++) {
+                table += "<td style='border: 1px solid black; text-align: center;'>" + results[i].mcsIndex + "</td>";
+                values += "<td style='border: 1px solid black; text-align: center;'> &nbsp; " + results[i].throughput
+                    .toFixed(0) + " &nbsp; </td>";
+            }
+
+            table += "</tr>" + values + "</tr></table>";
+            document.getElementById("allResults").innerHTML = table;
+        }
+
+        function populateMCSIndexOptions() {
+            var selectedTable = document.getElementById("selectedTable").value;
+            var selectedMCSIndexElement = document.getElementById("selectedMCSIndex");
+            selectedMCSIndexElement.innerHTML = "";
+
+            var mcsIndices = mcsConfigurations[selectedTable].length;
+            for (var i = 0; i < mcsIndices; i++) {
+                var option = document.createElement("option");
+                option.value = i;
+                option.text = "MCS Index " + i;
+                selectedMCSIndexElement.appendChild(option);
+            }
+
+            calculateThroughput(); // Calculate throughput when options are populated
+        }
+
+        function onTableSelectChange() {
+            populateMCSIndexOptions();
+        }
+
+        // Initialize the MCS Index dropdown when the page loads
+        window.onload = function () {
+            populateMCSIndexOptions();
+            // Set the default values for the form elements
+            document.getElementById("numAggregatedCC").value = "1";
+            document.getElementById("maxLayers").value = "2";
+            document.getElementById("scalingFactor").value = "1";
+            document.getElementById("RBAllocation").value = "106";
+            document.getElementById("muValue").value = "0";
+            document.getElementById("OHValue").value = "0.14";
+            document.getElementById("TDDPattern").value = "0.7857";
+            document.getElementById("blerInput").value = "0";
+
+            // 預先選擇範例數值
+            document.getElementById("selectedTable").value = "Table5.1.3.1-1";
+            document.getElementById("selectedMCSIndex").value = "28";
+
+            // 執行一次計算
+            calculateThroughput();
+        };
+    </script>
+</head>
+
+<body>
+    <h1>NR Throughput Advanced Calculator</h1>
+    <p style="margin: 0;">Author: Dustin_Chen, email: <a href="mailto:Dustin_Chen@compal.com"
+            style="line-height: 1;">Dustin_Chen@compal.com</a> or <a href="mailto:chuhpsdustin@gmail.com"
+            style="line-height: 1;">chuhpsdustin@gmail.com</a></p>
+    <br>
+    <table>
+        <tr>
+            <td>
+                <p>Ref: Spec 38.306, 38.214. Rmax = Target code Rate R/1024</p>
+                <p>Example: O-RAN.TIFG.E2E-Test.0-v04.00 chap 5.1.2 5G NR </p>
+                <img src="https://raw.githubusercontent.com/dustinchen26/NR_Tput_advance/master/formula.png" alt="GitHub Image"
+                    width="600">
+                <br>
+                <label for="numAggregatedCC">► J (Number of aggregated component carriers in a band):</label>
+                <select id="numAggregatedCC">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                </select><br><br>
+
+                <label for="maxLayers">► Layers (Maximum number of layers):</label>
+                <select id="maxLayers">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                </select><br><br>
+
+                <label for="selectedTable">► Select Table:</label>
+                <select id="selectedTable" onchange="onTableSelectChange();">
+                    <option value="Table5.1.3.1-1">Table 5.1.3.1-1</option>
+                    <option value="Table5.1.3.1-2">Table 5.1.3.1-2</option>
+                    <option value="Table5.1.3.1-3">Table 5.1.3.1-3</option>
+                    <option value="Table6.1.4.1-1">Table 6.1.4.1-1</option>
+                    <option value="Table6.1.4.1-2">Table 6.1.4.1-2</option>
+                </select><br><br>
+
+                <label for="selectedMCSIndex">► Select MCS Index:</label>
+                <!-- 此處將由JavaScript填充選項 -->
+                <select id="selectedMCSIndex"></select><br><br>
+
+
+
+                <label for="scalingFactor">► f (Scaling factor):</label>
+                <select id="scalingFactor">
+                    <option value="1">1</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.75">0.75</option>
+                    <option value="0.4">0.4</option>
+                </select><br><br>
+
+                <label for="RBAllocation">► RB Allocation:</label>
+                <select id="RBAllocation">
+                    <option value="273">273 (100MHz)</option>
+                    <option value="245">245 (90MHz)</option>
+                    <option value="217">217 (80MHz)</option>
+                    <option value="162">162 (60MHz)</option>
+                    <option value="133">133 (50MHz)</option>
+                    <option value="106">106 (40MHz)</option>
+                    <option value="78">78 (30MHz)</option>
+                    <option value="65">65 (25MHz)</option>
+                    <option value="51">51 (20MHz)</option>
+                    <option value="38">38 (15MHz)</option>
+                    <option value="24">24 (10MHz)</option>
+                    <option value="11">11 (5MHz)</option>
+                </select><br><br>
+
+                <label for="muValue">► μ Value:</label>
+                <select id="muValue">
+                    <option value="0">0 (15 kHz)</option>
+                    <option value="1">1 (30 kHz)</option>
+                    <option value="2">2 (60 kHz)</option>
+                </select><br><br>
+
+                <label for="OHValue">► OH Value:</label>
+                <select id="OHValue">
+                    <option value="0.14">0.14 (FR1 DL)</option>
+                    <option value="0.18">0.18 (FR2 DL)</option>
+                    <option value="0.08">0.08 (FR1 UL)</option>
+                    <option value="0.10">0.10 (FR2 UL)</option>
+                </select><br><br>
+
+                <label for="TDDPattern">► TDD ratio (range 0~1):</label>
+                <input type="number" id="TDDPattern" step="0.01" min="0" max="1"><br><br>
+<!--                <select id="TDDPattern">
+                    	
+        <option value="36/140">36/140 (UL: DDDSU DDSUU, S=10:2:2)</option>
+        <option value="83/140">83/140 (DL: DDDSU DDSUU, S=10:2:2)</option>
+        <option value="26/140">26/140 (UL: 7D1S2U, S=6:4:4)</option>
+        <option value="96/140">96/140 (DL: 7D1S2U, S=6:4:4)</option>
+        <option value="26/140">26/140 (UL: DDDSU UDDDD, S=6:4:4)</option>
+        <option value="96/140">96/140 (DL: DDDSU UDDDD, S=6:4:4)</option>
+        <option value="48/140">48/140 (UL: DDDSU UDSUU, S=10:4:0)</option>
+        <option value="70/140">70/140 (DL: DDDSU UDSUU, S=10:4:0)</option>
+        <option value="72/140">72/140 (UL: DSUUU DSUUU, S=10:2:2)</option>
+        <option value="44/140">44/140 (DL: DSUUU DSUUU, S=10:2:2)</option>
+        <option value="24/140">24/140 (UL: DDDSU DDDSU, S=10:2:2)</option>
+        <option value="96/140">96/140 (DL: DDDSU DDDSU, S=10:2:2)</option>
+		
+		             JavaScript 本身并不直接支持进行分数运算
+                    <option value="0.257142857">36/140 (UL: DDDSU DDSUU, S=10:2:2)</option>  
+                    <option value="0.592857143">83/140 (DL: DDDSU DDSUU, S=10:2:2)</option> 
+                    <option value="0.171428571">24/140 (UL: DDDSU DDDSU, S=10:2:2)</option>
+                    <option value="0.685714286">96/140 (DL: DDDSU DDDSU, S=10:2:2)</option>
+                    <option value="0.185714286">26/140 (UL: 7D1S2U, S=6:4:4)</option> 
+                    <option value="0.685714286">96/140 (DL: 7D1S2U, S=6:4:4)</option> 
+                    <option value="0.185714286">26/140 (UL: DDDSU UDDDD, S=6:4:4)</option> 
+                    <option value="0.685714286">96/140 (DL: DDDSU UDDDD, S=6:4:4)</option> 
+                    <option value="0.342857143">48/140 (UL: DDDSU UDSUU, S=10:4:0)</option>
+                    <option value="0.5">70/140 (DL: DDDSU UDSUU, S=10:4:0)</option> 
+                    <option value="0.514285714">72/140 (UL: DSUUU DSUUU, S=10:2:2)</option>
+                    <option value="0.314285714">44/140 (DL: DSUUU DSUUU, S=10:2:2)</option>
+                </select><br><br>
+-->
+
+                <label for="blerInput">► BLER (range 0~1):</label>
+                <input type="number" id="blerInput" step="0.01" min="0" max="1"><br><br>
+
+                <button onclick="calculateThroughput()">Calculate</button>
+                <button onclick="calculateAllMCS()">Calculate All MCS</button>
+                <p id="result"></p>
+
+            </td>
+            <td>
+                <img src="https://raw.githubusercontent.com/dustinchen26/NR_Tput_advance/master/MCS.png" alt="GitHub Image"
+                    width="900">
+            </td>
+        </tr>
+    </table>
+    <div id="allResults" style="margin-top: 20px;"></div>
+    <div id="allResultsError" style="color: red;"></div> <!-- Add this error message display area -->
+</body>
+
+</html>

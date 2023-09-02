@@ -192,6 +192,12 @@
             // Extract BLER input value
             BLER = parseFloat(document.getElementById("blerInput").value); // User input for BLER
 
+            // Add input validation for TDD_pattern
+            if (isNaN(TDD_pattern) || TDD_pattern < 0 || TDD_pattern > 1) {
+                document.getElementById("allResultsError").innerHTML =
+                    "Invalid TDD_ratio input. Please enter a value between 0 and 1.";
+                return;
+            }
 
             // Add input validation for BLER
             if (isNaN(BLER) || BLER < 0 || BLER > 1) {
@@ -237,8 +243,19 @@
             var selectedTable = document.getElementById("selectedTable").value;
             var mcsIndices = mcsConfigurations[selectedTable].length;
             var results = [];
+            var TDD_pattern = parseFloat(document.getElementById("TDDPattern").value);
             var BLER = parseFloat(document.getElementById("blerInput").value);
 
+            // Clear previous error message
+            document.getElementById("result").innerHTML = "";
+
+            // Add input validation for TDD_pattern
+            if (isNaN(TDD_pattern) || TDD_pattern < 0 || TDD_pattern > 1) {
+                document.getElementById("allResultsError").innerHTML =
+                    "Invalid TDD_ratio input. Please enter a value between 0 and 1.";
+                return;
+            }
+			
             // Add input validation for BLER
             if (isNaN(BLER) || BLER < 0 || BLER > 1) {
                 document.getElementById("allResultsError").innerHTML =
